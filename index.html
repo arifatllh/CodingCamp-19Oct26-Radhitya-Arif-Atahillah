@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Life Dashboard</title>
+
+  <!-- Anti-FOUC: terapkan dark mode SEBELUM CSS dimuat -->
+  <script>
+    (function () {
+      try {
+        var cfg = JSON.parse(localStorage.getItem('ld:config') || '{}');
+        if (cfg.darkMode) document.documentElement.setAttribute('data-theme', 'dark');
+      } catch (e) {}
+    })();
+  </script>
+
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <div class="app-wrapper">
+
+    <!-- HEADER -->
+    <header class="app-header">
+      <h1 class="app-title">Life Dashboard</h1>
+      <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark mode">
+        <span class="theme-icon" id="theme-icon">🌙</span>
+        <span class="theme-label" id="theme-label">Dark Mode</span>
+      </button>
+    </header>
+
+    <!-- MAIN GRID -->
+    <main class="app-grid">
+
+      <!-- CLOCK & GREETING -->
+      <section class="card" id="clock-section" aria-label="Jam dan Salam">
+        <div class="greeting" id="greeting">Selamat Datang!</div>
+        <div class="clock-time" id="clock-time">00:00:00</div>
+        <div class="clock-date" id="clock-date">Memuat...</div>
+
+        <!-- Username form -->
+        <div class="username-form" id="username-form">
+          <div class="username-display" id="username-display" style="display:none;">
+            <span id="username-text"></span>
+            <button class="btn btn-sm btn-secondary" id="edit-name-btn" aria-label="Edit nama">✏️ Edit</button>
+            <button class="btn btn-sm btn-danger" id="clear-name-btn" aria-label="Hapus nama">✕</button>
+          </div>
+          <div class="username-input-group" id="username-input-group">
+            <label for="name-input" class="sr-only">Nama kamu</label>
+            <input type="text" id="name-input" class="input" placeholder="Masukkan namamu..." maxlength="50" autocomplete="off" />
+            <button class="btn btn-primary" id="save-name-btn" aria-label="Simpan nama">Simpan</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- TASK LIST -->
+      <section class="card" id="tasklist-section" aria-label="Daftar Tugas">
+        <div class="section-header">
+          <h2 class="section-title">📋 Daftar Tugas</h2>
+          <div class="sort-controls">
+            <label for="sort-select" class="sr-only">Urutkan tugas</label>
+            <select id="sort-select" class="select" aria-label="Urutkan tugas">
+              <option value="created-newest">Terbaru</option>
+              <option value="created-oldest">Terlama</option>
+              <option value="incomplete-first">Belum Selesai Dulu</option>
+              <option value="complete-first">Selesai Dulu</option>
+            </select>
+          </div>
+        </div>
+
+        <form class="add-form" id="task-form" novalidate>
+          <label for="task-input" class="sr-only">Tambah tugas baru</label>
+          <input type="text" id="task-input" class="input" placeholder="Tambah tugas baru..." maxlength="200" autocomplete="off" />
+          <button type="submit" class="btn btn-primary" aria-label="Tambah tugas">+</button>
+        </form>
+        <div class="error-msg" id="task-error" role="alert" aria-live="polite"></div>
+
+        <ul class="task-list" id="task-list" role="list" aria-label="Daftar tugas"></ul>
+        <p class="empty-msg" id="task-empty">Belum ada tugas. Tambahkan tugas pertamamu!</p>
+      </section>
+
+      <!-- FOCUS TIMER -->
+      <section class="card" id="focustimer-section" aria-label="Focus Timer">
+        <div class="section-header">
+          <h2 class="section-title">⏱️ Focus Timer</h2>
+        </div>
+
+        <div class="timer-session-info">
+          <span class="timer-mode-label" id="timer-mode-label">Focus</span>
+          <span class="timer-status-label" id="timer-status-label">Siap</span>
+        </div>
+
+        <div class="timer-display" id="timer-display" aria-live="polite" aria-label="Waktu tersisa">25:00</div>
+
+        <div class="timer-notification" id="timer-notification" role="alert" aria-live="assertive"></div>
+
+        <div class="timer-controls">
+          <button class="btn btn-primary" id="timer-start" aria-label="Mulai timer">▶ Mulai</button>
+          <button class="btn btn-secondary" id="timer-pause" disabled aria-label="Jeda timer">⏸ Jeda</button>
+          <button class="btn btn-secondary" id="timer-reset" aria-label="Reset timer">↺ Reset</button>
+        </div>
+
+        <div class="timer-duration-controls" id="timer-duration-controls">
+          <div class="duration-group">
+            <label for="focus-duration-input">Fokus (menit)</label>
+            <input type="number" id="focus-duration-input" class="input input-sm" min="1" max="60" value="25" aria-label="Durasi fokus dalam menit" />
+            <div class="error-msg" id="focus-duration-error" role="alert" aria-live="polite"></div>
+          </div>
+          <div class="duration-group">
+            <label for="break-duration-input">Istirahat (menit)</label>
+            <input type="number" id="break-duration-input" class="input input-sm" min="1" max="30" value="5" aria-label="Durasi istirahat dalam menit" />
+            <div class="error-msg" id="break-duration-error" role="alert" aria-live="polite"></div>
+          </div>
+          <button class="btn btn-secondary btn-sm" id="save-duration-btn" aria-label="Simpan durasi">Terapkan</button>
+        </div>
+      </section>
+
+      <!-- QUICK LINKS -->
+      <section class="card" id="quicklinks-section" aria-label="Tautan Cepat">
+        <div class="section-header">
+          <h2 class="section-title">🔗 Tautan Cepat</h2>
+        </div>
+
+        <form class="add-form add-form-col" id="link-form" novalidate>
+          <label for="link-label-input" class="sr-only">Label tautan</label>
+          <input type="text" id="link-label-input" class="input" placeholder="Label (mis. GitHub)" maxlength="50" autocomplete="off" />
+          <label for="link-url-input" class="sr-only">URL tautan</label>
+          <input type="url" id="link-url-input" class="input" placeholder="URL (https://...)" maxlength="2000" autocomplete="off" />
+          <button type="submit" class="btn btn-primary" aria-label="Tambah tautan">Tambah</button>
+        </form>
+        <div class="error-msg" id="link-error" role="alert" aria-live="polite"></div>
+
+        <ul class="link-list" id="link-list" role="list" aria-label="Daftar tautan cepat"></ul>
+        <p class="empty-msg" id="link-empty">Belum ada tautan. Tambahkan tautan favoritmu!</p>
+      </section>
+
+    </main>
+  </div>
+
+  <script src="js/app.js" defer></script>
+</body>
+</html>
